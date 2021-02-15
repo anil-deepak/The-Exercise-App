@@ -11,6 +11,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Exercise App Home page</title>
     <link rel="stylesheet" href="style.css" />
+    <style>
+      input {
+        width: 300px;
+        height: 25px;
+        text-align: center;
+        border: 2px solid;
+      }
+    </style>
   </head>
   <body>
     <video autoplay muted loop id="myVideo">
@@ -19,15 +27,23 @@
     </video>
     <div class="wrapper">
       <div class="login-area">
-        <h2 style="font-family: chiller; font-size: 400%">Exercise App</h2>
-        <h3>
-          <input type="username" placeholder="Username or Email" /> <br />
-          <input type="password" placeholder="Password" />
-        </h3>
-        <div class="log-button"><h3>Login</h3></div>
-        <div class="log-button"><h3>Register</h3></div>
-        <div class="Forgot-pw">Forgot Password?</div>
+        <h2 style="font-family: chiller; font-size: 375%">Exercise App</h2>
+        <div class="input-user">
+          <h3>
+            <input type="username" placeholder="Username or Email" />
+            <br />
+            <br />
+            <input type="password" placeholder="Password" />
+          </h3>
+          <div class="log-button">
+            <h3>Login</h3>
+          </div>
+        </div>
       </div>
+      <br />
+      <div class="reg-user">Register</div>
+      <br />
+      <div class="forgot-pw">Forgot Password?</div>
     </div>
   </body>
 </html>
