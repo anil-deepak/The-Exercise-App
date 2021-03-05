@@ -8,7 +8,7 @@
         <span>5</span>
       </button>
     </div>
-    <div class="dropdown-menu" id="friendRequestsopdown" role="menu">
+    <div class="dropdown-menu" id="friendRequestsDropdown" role="menu">
         <div class="dropdown-content">
         <div class="dropdown-item">
           <router-link to="/FriendList">Friend list</router-link>
