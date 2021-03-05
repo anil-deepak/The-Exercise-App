@@ -1,0 +1,39 @@
+<template>
+  <div class="dropdown is-hoverable">
+    <div class="dropdown-trigger">
+      <button class="button is-link" aria-controls="friendRequestsDropdown">
+        <span class="icon">
+          <i class="fas fa-user-friends"></i>
+        </span>
+        <span>5</span>
+      </button>
+    </div>
+    <div class="dropdown-menu" id="friendRequestsopdown" role="menu">
+        <div class="dropdown-content">
+        <div class="dropdown-item">
+          <router-link to="/FriendList">Friend list</router-link>
+        </div>
+         <div class="dropdown-divider" />
+         <div class="dropdown-item" >
+          <FriendRequest />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import FriendRequest from "./FriendRequest";
+export default {
+  name: "FriendRequestsDropdown",
+  components: {
+      FriendRequest
+  },
+  computed:{
+  
+  }
+};
+</script>
+
+<style>
+</style>
