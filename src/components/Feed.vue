@@ -1,6 +1,6 @@
 <template>
   <div class="panel">
-      <div class="panel-heading">
+    <div class="panel-heading">
       <div class="level">
         <div class="level-left">
           <span>Feed</span>
@@ -18,7 +18,14 @@
         </div>
       </div>
     </div>
-    <Post />
+    <div class="panel-block">
+      <div class="clock w-100">
+        <div v-for="(post, index) in posts" :key="index">
+          <br />
+          <Post :info="post.info" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -26,22 +33,22 @@
 import Post from "../components/Post";
 export default {
   name: "Feed",
-   components: {
+  components: {
     Post,
   },
   computed: {
-    
+    posts() {
+      return JSON.parse(sessionStorage.getItem("posts"));
+    },
   },
   data() {
     return {
-      selectedFilter: "Public posts"
+      selectedFilter: "Public posts",
     };
   },
-   methods: {
-    
+  methods: {
     //triggered once we reach the end of the pahe, loads more posts, thats so I dont need to have pagination :)
-    
-  }
+  },
 };
 </script>
 
