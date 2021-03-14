@@ -4,7 +4,13 @@
       <a class="navbar-item" href="/">
         <strong class="is-size-4">Fitness</strong>
       </a>
-      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <a
+        role="button"
+        class="navbar-burger burger"
+        aria-label="menu"
+        aria-expanded="false"
+        data-target="navbarBasicExample"
+      >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -14,32 +20,45 @@
       <div class="navbar-start">
         <router-link to="/" class="navbar-item">Home</router-link>
         <router-link to="/about" class="navbar-item">About</router-link>
-         <router-link class="navbar-item" to="/FindPeople">Find people</router-link>
-         
+        <router-link to="/tools" class="navbar-item">Tools</router-link>
+        <router-link class="navbar-item" to="/FindPeople"
+          >Find people</router-link
+        >
       </div>
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <router-link to="/Login" class="button is-danger">Sign in</router-link>
-            <router-link to="/Signup" class="button is-dark">Sign up</router-link>
+            <router-link to="/Login" class="button is-danger"
+              >Sign in</router-link
+            >
+            <router-link to="/Signup" class="button is-dark"
+              >Sign up</router-link
+            >
           </div>
         </div>
         <div class="navbar-item">
-          <FriendRequestsDropdown/>
+          <FriendRequestsDropdown />
         </div>
-        <div class="navbar-item has-dropdown is-hoverable" >
+
+        <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link">
             <span class="icon">
               <i class="fas fa-user"></i>
             </span>
-            <span>Anil Deepak</span>
+            <span>{{ userName }}</span>
           </a>
           <div class="navbar-dropdown">
-            <router-link to="/AccountSettings" class="navbar-item">My profile</router-link>
-            <router-link to="/MyInputs" class="navbar-item">My inputs</router-link>
-            <router-link class="navbar-item" to="/Dashboard">Dashboard</router-link>
+            <router-link to="/AccountSettings" class="navbar-item"
+              >My profile</router-link
+            >
+            <router-link to="/MyInputs" class="navbar-item"
+              >My inputs</router-link
+            >
+            <router-link class="navbar-item" to="/Dashboard"
+              >Dashboard</router-link
+            >
             <router-link to="/Admin" class="navbar-item">Admin</router-link>
-            <a class="navbar-item">Sign out</a>
+            <a class="navbar-item" v-on:click="signOut">Sign out</a>
           </div>
         </div>
       </div>
@@ -47,33 +66,44 @@
   </nav>
 </template>
 <script>
-  import FriendRequestsDropdown from '@/components/FriendRequestsDropdown'
-  export default {
-    name: 'Nav',
-    components:{
-      FriendRequestsDropdown
+import FriendRequestsDropdown from "@/components/FriendRequestsDropdown";
+export default {
+  name: "Nav",
+  components: {
+    FriendRequestsDropdown,
+  },
+  data() {
+    return {
+      menuOpen: false,
+      userName: "",
+    };
+  },
+  mounted() {
+    const currentUser = sessionStorage.getItem("user")
+      ? JSON.parse(sessionStorage.getItem("user"))
+      : { firstname: "", lastname: "" };
+    this.userName = currentUser.firstname + " " + currentUser.lastname;
+  },
+  computed: {},
+  methods: {
+    signOut() {
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("isLoggedIn");
+      this.$router.push("/login");
     },
-    data(){
-      return{
-        menuOpen: false
-      }
-    },
-    computed:{
-    },
-    methods: {
-    }
-}
+  },
+};
 </script>
 <style lang="scss" scoped>
-  nav {
-    margin-top: 25px;
-    margin-bottom: 30px;
-    a {
-      font-weight: bold;
-      color: #2c3e50;
-      &.router-link-exact-active {
-        color: #d88d00;
-      }
-    }  
-  } 
+nav {
+  margin-top: 25px;
+  margin-bottom: 30px;
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+    &.router-link-exact-active {
+      color: #d88d00;
+    }
+  }
+}
 </style>
