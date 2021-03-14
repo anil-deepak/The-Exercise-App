@@ -7,18 +7,17 @@
           <div class="field">
             <label class="label">Username</label>
             <div class="control has-icons-left">
-             <input
+              <input
                 type="text"
-                :class="`input ${v$.user.username.$invalid ? 'is-danger' : ''}`"
+                class="input"
                 placeholder="Your username"
                 v-model.trim="user.username"
+                required
               />
               <span class="icon is-small is-left">
                 <i class="fas fa-user"></i>
               </span>
             </div>
-            <p v-if="!v$.user.username.required" class="help is-danger">Username is required</p>
-            <p v-if="!v$.user.username.isUnique" class="help is-danger">This username is not unique</p>
           </div>
         </div>
         <div class="panel-block">
@@ -29,7 +28,8 @@
                 <input
                   type="text"
                   class="input"
-                  placeholder="Your last name"
+                  placeholder="Your first name"
+                  required
                   v-model.trim="user.firstname"
                 />
                 <span class="icon is-small is-left">
@@ -43,8 +43,9 @@
                 <input
                   type="text"
                   class="input"
-                  placeholder="Your first name"
+                  placeholder="Your last name"
                   v-model.trim="user.lastname"
+                  required
                 />
                 <span class="icon is-small is-left">
                   <i class="fas fa-user"></i>
@@ -57,19 +58,17 @@
           <div class="field">
             <label class="label">Email</label>
             <div class="control has-icons-left">
-               <input
+              <input
                 type="email"
-                :class="`input ${v$.user.email.$invalid ? 'is-danger' : ''}`"
+                class="input"
                 placeholder="Your email"
                 v-model.trim="user.email"
+                required
               />
               <span class="icon is-small is-left">
                 <i class="fas fa-envelope" />
               </span>
             </div>
-            <p v-if="!v$.user.email.required" class="help is-danger">Email is required</p>
-            <p v-if="!v$.user.email.isUnique" class="help is-danger">This email is not unique</p>
-            <p v-if="!v$.user.email.email" class="help is-danger">Not an email</p>
           </div>
         </div>
         <div class="panel-block">
@@ -78,7 +77,7 @@
             <div class="control has-icons-left">
               <input
                 type="password"
-                :class="`input ${v$.user.password.$invalid ? 'is-danger' : ''}`"
+                class="input"
                 placeholder="Your password"
                 v-model.trim="user.password"
               />
@@ -86,21 +85,12 @@
                 <i class="fas fa-lock"></i>
               </span>
             </div>
-            <p v-if="!v$.user.password.required" class="help is-danger">Password is required</p>
-            <p
-              v-if="!v$.user.password.minLength"
-              class="help is-danger"
-            >Needs to be at least {{v$.user.password.$params.minLength.min}} charachters long</p>
-            <p
-              v-if="!v$.user.password.maxLength"
-              class="help is-danger"
-            >Can't be more than {{v$.user.password.$params.maxLength.max}} charachters long</p>
-            <p v-if="!v$.user.password.alphaNum" class="help is-danger">Needs to be alphanumeric</p>
+
             <label class="label">Repeat password</label>
             <div class="control has-icons-left">
               <input
                 type="password"
-                :class="`input ${v$.user.repeatPassword.$invalid ? 'is-danger' : ''}`"
+                class="input"
                 placeholder="Repeat your passowrd"
                 v-model.trim="user.repeatPassword"
               />
@@ -108,11 +98,6 @@
                 <i class="fas fa-lock"></i>
               </span>
             </div>
-            <p v-if="!v$.user.repeatPassword.required" class="help is-danger">Repeat the password</p>
-            <p
-              v-if="!v$.user.repeatPassword.sameAsPassword"
-              class="help is-danger"
-            >Needs to be the same as password</p>
           </div>
         </div>
         <div class="panel-block">
@@ -131,18 +116,23 @@
                 </span>
                 <span class="file-label">Choose a profile picture...</span>
               </span>
-              <span class="file-name">{{ picture ? picture.name : "Not selected" }}</span>
+              <span class="file-name">{{
+                picture ? picture.name : "Not selected"
+              }}</span>
             </label>
           </div>
         </div>
         <div class="panel-block">
+          <p class="help is-danger">
+            {{ error }}
+          </p>
+        </div>
+        <div class="panel-block">
           <div class="field">
             <div class="control">
-              <a
-                class="button is-primary w-100"
-                
-                @click="registerClicked()"
-              >Register</a>
+              <a class="button is-primary w-100" @click="registerClicked()"
+                >Register</a
+              >
             </div>
           </div>
         </div>
@@ -154,21 +144,12 @@
           />
         </div>
       </div>
-      
     </div>
   </div>
 </template>
 
 <script>
-import useVuelidate from '@vuelidate/core'
-import { required,
-      minLength,
-      alphaNum,
-      email,
-      sameAs,
-      maxLength } from '@vuelidate/validators'
 export default {
- 
   name: "SignUp",
   data() {
     return {
@@ -177,95 +158,102 @@ export default {
         password: "",
         repeatPassword: "",
         email: "",
-        firstname: null,
-        lastname: null,
-        picture: null 
+        firstname: "",
+        lastname: "",
+        picture: "",
       },
-      picture:null,
+      error: "",
+      picture: null,
       notificationModal: {
         isVisible: false,
         modalColor: "is-success",
         title: "",
-        text: ""
+        text: "",
       },
       uploadProgressBar: {
         isUploading: false,
-        uploadProgress: 0
-      }
+        uploadProgress: 0,
+      },
     };
   },
-  setup () {
-    return { v$: useVuelidate() }
-  },
-  validations() {
-    return {
-      user:{
-        username:{
-          required
-        },
-        password:{
-          required,
-          minLength: minLength(8),
-          maxLength: maxLength(64),
-          alphaNum
-        },
-        repeatPassword:{
-          required,
-          sameAsPassword: sameAs("password", this)
-        },
-        email:{
-          required,
-          email
-        },
-        firstname:{
-          required
-        },
-        lastname:{
-          required
-        }
-      }
-    }
-  },
+
   methods: {
+    validateFields() {
+      // username
+      if (this.user.username.length === 0) {
+        this.error = "Username should not be empty";
+        return false;
+      }
+
+      // firstname
+      if (this.user.firstname.length === 0) {
+        this.error = "Firstname should not be empty";
+        return false;
+      }
+
+      // lastname
+      if (this.user.lastname.length === 0) {
+        this.error = "Lastname should not be empty";
+        return false;
+      }
+
+      // email
+      if (this.user.email.length === 0) {
+        this.error = "Email is required";
+        return false;
+      }
+
+      // password
+      if (this.user.password.length === 0) {
+        this.error = "Password is required";
+        return false;
+      }
+
+      return true;
+    },
     //registers a new user
-    async registerClicked() {
-      
+    registerClicked() {
+      //  if fields are valid
+      if (this.validateFields()) {
+        //  get users in the session
+        let users = sessionStorage.users
+          ? JSON.parse(sessionStorage.getItem("users"))
+          : [];
+        users.push(this.user);
+        sessionStorage.setItem("users", JSON.stringify(users));
+
+        sessionStorage.setItem("user", JSON.stringify(this.user));
+        sessionStorage.setItem("isLoggedIn", true);
+        this.clearForm();
+        this.$router.push("/");
+      }
     },
-    pictureSelected(e) {
-      this.picture = e.target.files[0];
+
+    clearForm() {
+      this.picture = null;
+      var userToClear = this.user;
+      userToClear.username = "";
+      userToClear.email = "";
+      userToClear.password = "";
+      userToClear.repeatPassword = "";
+      userToClear.firstname = "";
+      userToClear.lastname = "";
     },
-    setUploadProgress: function(uploadEvent) {
-      this.uploadProgressBar.uploadProgress = Math.round(
-        (uploadEvent.loaded / uploadEvent.total) * 100
-      )
-    },
-    successModalClosed(){
-      this.clearForm()
-      this.$router.push('/SignIn')
-    },
-    clearForm(){
-      this.picture = null
-      var userToClear = this.user
-      userToClear.username = ""
-      userToClear.email = ""
-      userToClear.password = ""
-      userToClear.repeatPassword = ""
-      userToClear.firstname = ""
-      userToClear.lastname = ""
-      
+  },
+  mounted() {
+    if (sessionStorage.isLoggedIn) {
+      this.$router.push("/");
     }
   },
-  mounted(){}
 };
 </script>
 
 <style scoped>
-
 .w-100,
 .field {
   width: 100%;
 }
-.h-100perc{
+.h-100perc {
   height: 100%;
 }
 </style>
