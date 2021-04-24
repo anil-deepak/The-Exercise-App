@@ -1,15 +1,7 @@
 <template>
   <div class="section">
     <div class="container">
-      <div class="panel">
-        <div class="panel-heading">
-          <div class="level">
-            <div class="level-left">My inputs:</div>
-          </div>
-        </div>
-
-        <Input />
-      </div>
+      <Input />
     </div>
   </div>
 </template>

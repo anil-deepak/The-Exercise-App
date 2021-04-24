@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const morgan = require("morgan");
 dotenv.config();
 
 const { LoginRequired } = require("./controllers/security");
@@ -19,7 +20,7 @@ app
   .use(express.json())
   .use(express.static("./dist"))
   .use(cors())
-
+  .use(morgan("dev"))
   .use("/auth", authController)
   .use("/users", usersController)
   .use("/posts", LoginRequired, postsController)

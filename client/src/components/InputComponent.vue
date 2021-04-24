@@ -3,11 +3,11 @@
     <div class="field">
       <label for class="label">Exercise:</label>
       <div class="control">
-        <input type="text" class="input" v-model.trim="input.name"/>
+        <input type="text" class="input" v-model.trim="input.name" />
         <p v-if="!v$.input.name.required" class="help is-danger">Required</p>
       </div>
     </div>
-    
+
     <div class="field w-100">
       <label for class="label">Type of exercise:</label>
       <div class="control">
@@ -27,17 +27,19 @@
     </div>
     <div class="field has-addons">
       <div class="control is-expanded">
-         <input
+        <input
           type="text"
           class="input"
           v-model.trim="input.input_data.length"
           placeholder="For how long"
         />
-          <p v-if="!v$.input.input_data.length.numeric" class="help is-danger">Needs to be a numeric</p>
+        <p v-if="!v$.input.input_data.length.numeric" class="help is-danger">
+          Needs to be a numeric
+        </p>
       </div>
       <div class="control">
         <span class="select">
-          <select  v-model="lengthUnit">
+          <select v-model="lengthUnit">
             <option value="Hours">Hours</option>
             <option value="Minutes">Minutes</option>
             <option value="Seconds">Seconds</option>
@@ -50,25 +52,28 @@
       <div class="control">
         <input type="text" class="input" v-model.number="input.value" />
         <p v-if="!v$.input.value.required" class="help is-danger">Required</p>
-        <p v-if="!v$.input.value.numeric" class="help is-danger">Needs to be a numeric</p>
+        <p v-if="!v$.input.value.numeric" class="help is-danger">
+          Needs to be a numeric
+        </p>
       </div>
     </div>
 
-   <div class="field is-grouped is-grouped-right">
+    <div class="field is-grouped is-grouped-right">
       <label class="checkbox">
         <input type="checkbox" v-model="share" />
-          Share this accomplishment
+        Share this accomplishment
       </label>
     </div>
-    
-    
+
     <div class="field is-grouped is-grouped-centered">
       <div class="control">
         <button
-          :disabled="!v$.input.$invalid"
+          :disabled="v$.input.$invalid"
           class="button is-link"
           @click="addButtonClick()"
-        >Add to your daily exercise</button>
+        >
+          Add to your daily exercise
+        </button>
       </div>
     </div>
     <ShareModal
@@ -89,34 +94,33 @@
 <script>
 import ShareModal from "./ShareModal";
 import InfoModal from "./InfoModal";
-import useVuelidate from '@vuelidate/core'
-import { required, numeric } from '@vuelidate/validators'
+import useVuelidate from "@vuelidate/core";
+import { required, numeric } from "@vuelidate/validators";
+import { mapActions } from "vuex";
 
 export default {
   name: "InputComponent",
-   components: {
+  components: {
     ShareModal,
-    InfoModal
+    InfoModal,
   },
-  computed: {
-    
-  },
-  setup () {
-    return { v$: useVuelidate() }
+  computed: {},
+  setup() {
+    return { v$: useVuelidate() };
   },
   data() {
     return {
-       //exerciseTypeInput is used to store text we type in autocomplete
-      exerciseTypeInput: '',
+      //exerciseTypeInput is used to store text we type in autocomplete
+      exerciseTypeInput: "",
       input: {
-        _id:null,
+        _id: null,
         type: "ExerciseInput",
         name: "",
         value: null,
-         input_data: {
+        input_data: {
           exerciseType: "",
-          length: ""
-        }
+          length: "",
+        },
       },
       lengthUnit: "Minutes",
       share: false,
@@ -125,78 +129,62 @@ export default {
         visible: false,
         modalColor: "is-success",
         title: "",
-        text: ""
-      }
+        text: "",
+      },
     };
   },
   validations() {
     return {
       input: {
         name: {
-          required
+          required,
         },
         value: {
           required,
-          numeric
+          numeric,
         },
         input_data: {
-        length: {
-          numeric
-        }
-        }
-      }
-    }
-    
+          length: {
+            numeric,
+          },
+        },
+      },
+    };
   },
   methods: {
-    
+    ...mapActions(["AddWorkout"]),
     //sets selected type
-    selectedExerciseType(selectedType){
-      this.input.input_data.exerciseType = selectedType
+    selectedExerciseType(selectedType) {
+      this.input.input_data.exerciseType = selectedType;
     },
     async addButtonClick() {
-       //Function is triggered once Add to your daily exercise is clicked
+      //Function is triggered once Add to your daily exercise is clicked
       if (!this.v$.input.$invalid) {
         this.input.input_data.length = `${this.input.input_data.length} ${this.lengthUnit}`;
         //If share checkbox is checked open share modal else open modal with either success or fail depending on the addInput() outcome
-        var res = await this.addInput(this.input);
-        if (res) {
-          this.infoModalData.modalColor = "is-success";
-          this.infoModalData.title = "Success";
-          this.infoModalData.text = "Successfuly added";
-          this.input = res
-        } else {
-          this.infoModalData.modalColor = "is-warning";
-          this.infoModalData.title = "Error";
-          this.infoModalData.text = "An error happened";
-          return
-        }
-      if (this.share) {
-          if (!res) this.infoModalData.visible = true;
-          else this.shareModalVisible = true;
-        }
-        if (!this.share) {
-          this.infoModalData.visible = true;
-          this.clearForm()
-        }
+        await this.AddWorkout({
+          name: this.input.name,
+          type: this.input.input_data.exerciseType,
+          duration: this.input.input_data.length,
+          calories: this.input.value,
+        });
 
+        this.clearForm();
       }
-      },
+    },
     clearForm() {
-      this.input._id = null
+      this.input._id = null;
       this.input.name = "";
       this.input.value = null;
       this.input.input_data.exerciseType = "";
       this.input.input_data.length = "";
     },
-    shareModalClosed(){
-      this.shareModalVisible = false
-      this.clearForm()
-    }
+    shareModalClosed() {
+      this.shareModalVisible = false;
+      this.clearForm();
+    },
   },
-   mounted(){
-
-  }
+  mounted() {},
 };
 </script>
 

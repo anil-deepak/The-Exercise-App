@@ -15,7 +15,7 @@
 
 <script>
 import PersonCard from "../components/PersonCard";
-import { GetAllUsers } from "../models/Users";
+
 export default {
   name: "FriendList",
   components: {
@@ -23,12 +23,12 @@ export default {
   },
   computed: {
     getFriendsObjects: () => {
-      return Users;
+      return [];
     },
   },
   methods: {},
   async mounted() {
-    this.users = await GetAllUsers();
+    this.users = [];
   },
 };
 </script>

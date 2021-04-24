@@ -20,7 +20,7 @@
             </div>
           </div>
         </div>
-        <div class="panel-block" v-for="user in users" :key="user.id">
+        <div class="panel-block" v-for="user in Users" :key="user.id">
           <PersonCard :user="user" />
         </div>
       </div>
@@ -30,7 +30,7 @@
 
 <script>
 import PersonCard from "../components/PersonCard";
-import { GetAllUsers } from "../models/Users";
+import { mapActions, mapGetters } from "vuex";
 export default {
   name: "FindPeople",
   components: {
@@ -39,20 +39,16 @@ export default {
   data() {
     return {
       search: "",
-      users: [],
     };
   },
-  computed: {
-    getUsers: () => {
-      var users = Users;
-      return users;
-    },
+  created: function() {
+    this.GetPeople();
   },
-  methods: {},
-  async mounted() {
-    const { data } = await GetAllUsers();
-    console.log(data);
-    this.users = data.users;
+  computed: {
+    ...mapGetters({ Users: "People" }),
+  },
+  methods: {
+    ...mapActions(["GetPeople"]),
   },
 };
 </script>

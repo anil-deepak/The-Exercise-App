@@ -48,7 +48,7 @@
 
 <script>
 import moment from "moment";
-import Session from "../models/Session";
+
 export default {
   name: "UserProfile",
   props: {
@@ -59,7 +59,7 @@ export default {
   },
   data() {
     return {
-      user: Session.user,
+      user: "Session.user",
     };
   },
   methods: {
@@ -89,9 +89,6 @@ export default {
     handle: function() {
       this.getUser();
     },
-  },
-  mounted() {
-    this.getUser();
   },
 };
 </script>

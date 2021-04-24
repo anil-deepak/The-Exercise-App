@@ -54,8 +54,7 @@
   </div>
 </template>
 <script>
-import router from "@/router/index.js";
-import Session, { Login } from "../models/Session";
+import { mapActions } from "vuex";
 export default {
   name: "SignIn",
   data() {
@@ -68,32 +67,28 @@ export default {
     };
   },
 
-  mounted() {
-    if (Session.user) {
-      this.$router.push("/");
-    }
-  },
   methods: {
+    ...mapActions(["SignIn"]),
     validateFields() {
-      // email
       if (this.credentials.handle.length === 0) {
         this.error = "Username is required";
         return false;
       }
-
-      // password
       if (this.credentials.password.length === 0) {
         this.error = "Password is required";
         return false;
       }
-
       return true;
     },
     async login() {
-      if (this.validateFields()) {
-        await Login(this.credentials);
-        this.resetForm();
-        this.$router.push("/");
+      try {
+        if (this.validateFields()) {
+          await this.SignIn(this.credentials);
+          this.resetForm();
+          this.$router.push("/");
+        }
+      } catch (err) {
+        this.error = err.toString();
       }
     },
     resetForm() {

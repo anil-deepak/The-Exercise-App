@@ -6,7 +6,7 @@ const list = [
     alt: "Placeholder image",
     caption: "Lorem Ipsom",
     time: Date(),
-    user_handle: "@johnsmith",
+    handle: "johnsmith",
     isPublic: true,
   },
   {
@@ -14,7 +14,7 @@ const list = [
     alt: "Placeholder image",
     caption: "We want Moshiach Now",
     time: Date(),
-    user_handle: "@vp",
+    handle: "vp",
     isPublic: true,
   },
   {
@@ -22,7 +22,7 @@ const list = [
     alt: "Placeholder image",
     caption: "Have a wonderful day",
     time: Date(),
-    user_handle: "@JewPaltz",
+    handle: "JewPaltz",
     isPublic: true,
   },
 ];
@@ -31,7 +31,7 @@ const listWithOwner = () =>
   list.map((x, i) => ({
     ...x,
     id: i,
-    user: users.GetByHandle(x.user_handle),
+    user: users.GetByHandle(x.handle),
   }));
 
 module.exports.GetAll = () => {
@@ -39,19 +39,19 @@ module.exports.GetAll = () => {
 };
 
 module.exports.GetWall = (handle) => {
-  return listWithOwner().filter((post) => post.user_handle == handle);
+  return listWithOwner().filter((post) => post.handle == handle);
 };
 
 module.exports.GetFeed = (handle) =>
   listWithOwner().filter((post) =>
     users
       .GetByHandle(handle)
-      .following.some((f) => f.handle == post.user_handle && f.isApproved)
+      .following.some((f) => f.handle == post.handle && f.isApproved)
   );
 
 module.exports.Get = (post_id) => list[post_id];
 module.exports.Add = (post) => {
-  if (!post.user_handle) {
+  if (!post.handle) {
     throw { code: 422, msg: "Post must have an Owner" };
   }
   list.push(post);

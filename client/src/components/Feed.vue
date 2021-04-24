@@ -9,7 +9,7 @@
     </div>
     <div class="panel-block">
       <div class="clock w-100">
-        <div v-for="(post, index) in posts" :key="index">
+        <div v-for="(post, index) in Posts" :key="index">
           <br />
           <Post :info="post" />
         </div>
@@ -20,7 +20,7 @@
 
 <script>
 import Post from "../components/Post";
-import { GetMyPosts } from "../models/Posts";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   name: "Feed",
@@ -31,14 +31,16 @@ export default {
   data() {
     return {
       selectedFilter: "Public posts",
-      posts: [],
     };
   },
-  async mounted() {
-    const { data } = await GetMyPosts();
-    this.posts = data;
+  computed: {
+    ...mapGetters({ Posts: "Posts", User: "User" }),
+  },
+  created: function() {
+    this.GetPosts();
   },
   methods: {
+    ...mapActions(["GetPosts"]),
     //triggered once we reach the end of the pahe, loads more posts, thats so I dont need to have pagination :)
   },
 };

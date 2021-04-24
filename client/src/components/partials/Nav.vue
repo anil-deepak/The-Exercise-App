@@ -20,8 +20,10 @@
       <div class="navbar-start">
         <router-link to="/" class="navbar-item">Home</router-link>
         <router-link to="/about" class="navbar-item">About</router-link>
-        <router-link to="/tools" class="navbar-item">Tools</router-link>
-        <router-link class="navbar-item" to="/FindPeople"
+        <router-link to="/tools" class="navbar-item" v-if="User != null"
+          >Tools</router-link
+        >
+        <router-link class="navbar-item" to="/FindPeople" v-if="User != null"
           >Find people</router-link
         >
       </div>
@@ -45,9 +47,11 @@
             <span class="icon">
               <i class="fas fa-user"></i>
             </span>
-            <span>{{ userName }}</span>
+            <span>{{
+              User ? User.user.firstName + " " + User.user.lastName : ""
+            }}</span>
           </a>
-          <div class="navbar-dropdown">
+          <div class="navbar-dropdown" v-if="User != null">
             <router-link to="/AccountSettings" class="navbar-item"
               >My profile</router-link
             >
@@ -67,7 +71,8 @@
 </template>
 <script>
 import FriendRequestsDropdown from "@/components/FriendRequestsDropdown";
-import Session, { Logout } from "../../models/Session";
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "Nav",
   components: {
@@ -78,22 +83,14 @@ export default {
       menuOpen: false,
     };
   },
-  mounted() {
-    const currentUser = Session.user;
 
-    this.userName = Session.user
-      ? currentUser.firstName + " " + currentUser.lastName
-      : "John Doe";
-  },
   computed: {
-    userName() {
-      const currentUser = Session.user;
-      return currentUser.firstName + " " + currentUser.lastName;
-    },
+    ...mapGetters({ User: "User" }),
   },
   methods: {
+    ...mapActions(["logOut"]),
     signOut() {
-      Logout();
+      this.logOut();
       this.$router.push("/login");
     },
   },

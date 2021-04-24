@@ -100,7 +100,7 @@
             </div>
           </div>
         </div>
-        <div class="panel-block">
+        <!-- <div class="panel-block">
           <div class="file has-name is-fullwidth w-100">
             <label class="file-label">
               <input
@@ -121,7 +121,7 @@
               }}</span>
             </label>
           </div>
-        </div>
+        </div> -->
         <div class="panel-block">
           <p class="help is-danger">
             {{ error }}
@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import Session, { Register } from "../models/Session";
+import { mapActions } from "vuex";
 export default {
   name: "SignUp",
   data() {
@@ -179,6 +179,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(["SignUp"]),
     validateFields() {
       // username
       if (this.user.handle.length === 0) {
@@ -214,10 +215,14 @@ export default {
     },
 
     async register() {
-      if (this.validateFields()) {
-        await Register(this.user);
-        this.clearForm();
-        this.$router.push("/");
+      try {
+        if (this.validateFields()) {
+          await this.SignUp(this.user);
+          this.clearForm();
+          this.$router.push("/");
+        }
+      } catch (err) {
+        this.error = err.toString();
       }
     },
 
@@ -231,11 +236,6 @@ export default {
       userToClear.firstname = "";
       userToClear.lastname = "";
     },
-  },
-  mounted() {
-    if (Session.user) {
-      this.$router.push("/");
-    }
   },
 };
 </script>

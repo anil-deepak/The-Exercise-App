@@ -1,10 +1,10 @@
 <template>
-    <div class="container">
+  <div class="container">
     <div class="field">
       <label for class="label">Food name:</label>
       <div class="control">
-        <input type="text" class="input" v-model.trim="input.name"/>
-         <p v-if="!v$.input.name.required" class="help is-danger">Required</p>
+        <input type="text" class="input" v-model.trim="input.name" />
+        <p v-if="!v$.input.name.required" class="help is-danger">Required</p>
       </div>
     </div>
     <div class="field">
@@ -13,8 +13,10 @@
     <div class="field">
       <div class="control is-expanded">
         <div class="select w-100">
-           <select class="w-100" v-model="input.input_data.foodType">
-            <option v-for="type in getFoodTypes" :key="type" :value="type">{{type}}</option>
+          <select class="w-100" v-model="input.input_data.foodType">
+            <option v-for="type in getFoodTypes" :key="type" :value="type">{{
+              type
+            }}</option>
           </select>
         </div>
       </div>
@@ -25,7 +27,9 @@
     <div class="field has-addons">
       <div class="control is-expanded">
         <input type="text" class="input" v-model="input.input_data.quantity" />
-        <p v-if="!v$.input.input_data.quantity.numeric" class="help is-danger">Needs to be numeric</p>
+        <p v-if="!v$.input.input_data.quantity.numeric" class="help is-danger">
+          Needs to be numeric
+        </p>
       </div>
       <p class="control">
         <a class="button is-static">grams</a>
@@ -34,9 +38,11 @@
     <div class="field">
       <label class="label">Calories:</label>
       <div class="control">
-        <input type="text" class="input" v-model.number="input.value"/>
-         <p v-if="!v$.input.value.required" class="help is-danger">Required</p>
-        <p v-if="!v$.input.value.numeric" class="help is-danger">Needs to be numeric</p>
+        <input type="text" class="input" v-model.number="input.value" />
+        <p v-if="!v$.input.value.required" class="help is-danger">Required</p>
+        <p v-if="!v$.input.value.numeric" class="help is-danger">
+          Needs to be numeric
+        </p>
       </div>
     </div>
     <div class="field is-grouped is-grouped-right">
@@ -47,14 +53,16 @@
     </div>
     <div class="field is-grouped is-grouped-centered">
       <div class="control">
-         <button
-          
+        <button
+          :disabled="v$.input.$invalid"
+          @click="addButtonClick()"
           class="button is-link"
-          
-        >Add to your daily intake</button>
+        >
+          Add to your daily intake
+        </button>
+      </div>
     </div>
-  </div>
-  <ShareModal
+    <ShareModal
       :isVisible="shareModalVisible"
       :inputProp="input"
       @modalClosed="shareModalClosed()"
@@ -70,30 +78,31 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 import InfoModal from "./InfoModal";
 import ShareModal from "./ShareModal";
-import useVuelidate from '@vuelidate/core'
-import { required, numeric } from '@vuelidate/validators'
+import useVuelidate from "@vuelidate/core";
+import { required, numeric } from "@vuelidate/validators";
 export default {
-    name: "OtherComponent",
-    components: {
+  name: "OtherComponent",
+  components: {
     ShareModal,
-    InfoModal
+    InfoModal,
   },
-  setup () {
-    return { v$: useVuelidate() }
+  setup() {
+    return { v$: useVuelidate() };
   },
   data() {
     return {
       input: {
-        _id:null,
+        _id: null,
         type: "FoodInput",
         name: "",
         value: null,
-        input_data:{
-        foodType: null,
-        quantity: null
-        }
+        input_data: {
+          foodType: null,
+          quantity: null,
+        },
       },
       share: false,
       shareModalVisible: false,
@@ -101,38 +110,50 @@ export default {
         visible: false,
         modalColor: "is-success",
         title: "",
-        text: ""
-      }
+        text: "",
+      },
     };
   },
   validations() {
     return {
       input: {
         name: {
-          required
+          required,
         },
         value: {
           required,
-          numeric
+          numeric,
         },
-          input_data: {
+        input_data: {
           quantity: {
-            numeric
-          }
-        }
-      }
-    }
-    
+            numeric,
+          },
+        },
+      },
+    };
   },
   computed: {
-    getFoodTypes:()=>{
-      return [
-              'Vegan',
-              'Non vegan'
-          ]
-    }
+    getFoodTypes: () => {
+      return ["Vegan", "Non vegan"];
+    },
   },
   methods: {
+    ...mapActions(["AddFood"]),
+    async addButtonClick() {
+      //Function is triggered once Add to your daily exercise is clicked
+      if (!this.v$.input.$invalid) {
+        this.input.input_data.length = `${this.input.input_data.length} ${this.lengthUnit}`;
+        //If share checkbox is checked open share modal else open modal with either success or fail depending on the addInput() outcome
+        await this.AddFood({
+          name: this.input.name,
+          type: this.input.input_data.foodType,
+          quantity: this.input.input_data.quantity,
+          calories: this.input.value,
+        });
+
+        this.clearForm();
+      }
+    },
     clearForm() {
       this.input._id = null;
       this.input.name = "";
@@ -143,10 +164,9 @@ export default {
     shareModalClosed() {
       this.shareModalVisible = false;
       this.clearForm();
-    }
-  }
+    },
+  },
 };
-
 </script>
 
 <style>

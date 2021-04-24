@@ -32,7 +32,7 @@
 import Feed from "../components/Feed";
 import BothInput from "../components/BothInput";
 import NewPost from "../components/NewPost.vue";
-import Session from "../models/Session";
+
 export default {
   name: "Home",
   components: {
@@ -44,11 +44,6 @@ export default {
     goToSignUp() {
       this.$router.push("/signup");
     },
-  },
-  mounted() {
-    if (!Session.user) {
-      this.$router.push("/Login");
-    }
   },
 };
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="panel">
     <div class="panel-heading">New Post</div>
-    <form class="container" v-on:submit="postBtnClicked()">
+    <form class="container" v-on:submit.prevent="postBtnClicked()">
       <div class="panel-block">
         <input
           type="text"
@@ -27,27 +27,24 @@
 </template>
 
 <script>
-import Session from "../models/Session";
+import { mapActions } from "vuex";
 export default {
+  name: "NewPost",
   data() {
     return {
       caption: "",
-      handle: "",
       error: "",
     };
   },
-  mounted() {
-    this.username = Session.user.handle;
-  },
+  mounted() {},
   methods: {
-    postBtnClicked() {
-      console.log("entered post");
-      if (this.info.length === 0) {
-        this.error = "Please enter a post message";
-      } else {
-        // add post
-
+    ...mapActions(["CreatePost"]),
+    async postBtnClicked() {
+      try {
+        await this.CreatePost({ caption: this.caption });
         this.caption = "";
+      } catch (error) {
+        this.error = "Sorry you can't make a post now!";
       }
     },
   },

@@ -16,7 +16,7 @@ app.get("/:post_id", (req, res) => {
 });
 
 app.post("/", (req, res) => {
-  req.body.user_handle = req.user.handle;
+  req.body.handle = req.user.handle;
 
   res.send(posts.Add(req.body));
 });

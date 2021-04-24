@@ -4,12 +4,12 @@ const list = [
   {
     bmi: "24",
     time: Date(),
-    user_handle: "@johnsmith",
+    handle: "johnsmith",
   },
   {
     bmi: "27",
     time: Date(),
-    user_handle: "@vp",
+    handle: "vp",
   },
 ];
 
@@ -17,7 +17,7 @@ const listWithOwner = () =>
   list.map((x, i) => ({
     ...x,
     id: i,
-    user: users.GetByHandle(x.user_handle),
+    user: users.GetByHandle(x.handle),
   }));
 
 module.exports.GetAll = () => {
@@ -25,11 +25,11 @@ module.exports.GetAll = () => {
 };
 
 module.exports.GetWall = (handle) => {
-  return listWithOwner().filter((bmi) => bmi.user_handle === handle);
+  return listWithOwner().filter((bmi) => bmi.handle === handle);
 };
 
 module.exports.Add = (bmi) => {
-  if (!bmi.user_handle) {
+  if (!bmi.handle) {
     throw { code: 422, msg: "BMI must have an Owner" };
   }
   list.push(bmi);

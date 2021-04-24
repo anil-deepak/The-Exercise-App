@@ -7,7 +7,7 @@ const list = [
     qty: "200",
     calories: "100",
     time: Date(),
-    user_handle: "@johnsmith",
+    handle: "johnsmith",
   },
   {
     name: "Millets",
@@ -15,7 +15,7 @@ const list = [
     qty: "500",
     calories: "600",
     time: Date(),
-    user_handle: "@vp",
+    handle: "vp",
   },
   {
     name: "Green Salad",
@@ -23,7 +23,7 @@ const list = [
     qty: "300",
     calories: "70",
     time: Date(),
-    user_handle: "@johnsmith",
+    handle: "johnsmith",
   },
 ];
 
@@ -31,7 +31,7 @@ const listWithOwner = () =>
   list.map((x, i) => ({
     ...x,
     id: i,
-    user: users.GetByHandle(x.user_handle),
+    user: users.GetByHandle(x.handle),
   }));
 
 module.exports.GetAll = () => {
@@ -39,11 +39,11 @@ module.exports.GetAll = () => {
 };
 
 module.exports.GetWall = (handle) => {
-  return listWithOwner().filter((food) => food.user_handle === handle);
+  return listWithOwner().filter((food) => food.handle === handle);
 };
 
 module.exports.Add = (food) => {
-  if (!food.user_handle) {
+  if (!food.handle) {
     throw { code: 422, msg: "Food must have an Owner" };
   }
   list.push(food);

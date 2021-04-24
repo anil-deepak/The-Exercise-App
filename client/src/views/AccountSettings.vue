@@ -1,6 +1,7 @@
 <template>
   <div class="section">
     <div class="container">
+      <!-- <form @submit.prevent=""></form> -->
       <div class="box">
         <div class="profile-container">
           <div class="image-container">
@@ -15,15 +16,35 @@
           <div class="profile-info-container">
             <div class="profile-info-element">Username:</div>
             <div class="profile-info-element">
-              {{ getCurrentUser.handle }}
+              <div class="field">
+                <div class="control">
+                  <input class="input" type="text" v-model="form.handle" />
+                </div>
+              </div>
             </div>
-            <div class="profile-info-element">Full name:</div>
+            <div class="profile-info-element">First name:</div>
             <div class="profile-info-element">
-              {{ getCurrentUserFullName || "" }}
+              <div class="field">
+                <div class="control">
+                  <input class="input" type="text" v-model="form.firstName" />
+                </div>
+              </div>
             </div>
+
+            <div class="profile-info-element">Last name:</div>
+            <div class="profile-info-element">
+              <div class="field">
+                <div class="control">
+                  <input class="input" type="text" v-model="form.lastName" />
+                </div>
+              </div>
+            </div>
+
             <div class="profile-info-element">Email:</div>
-            <div class="profile-info-element">
-              {{ getCurrentUser.email || "" }}
+            <div class="field">
+              <div class="control">
+                <input class="input" type="text" v-model="form.email" />
+              </div>
             </div>
             <div class="profile-info-element">Change Password:</div>
             <div class="profile-info-element">
@@ -33,32 +54,8 @@
                     class="input"
                     type="password"
                     placeholder="Change password"
-                    v-model="changePasswordData.password"
+                    v-model="form.password"
                   />
-                  <p
-                    v-if="!v$.changePasswordData.password.required"
-                    class="help is-danger"
-                  >
-                    Required
-                  </p>
-                  <p
-                    v-if="!v$.changePasswordData.password.minLength"
-                    class="help is-danger"
-                  >
-                    Needs to be 8 or more charachters
-                  </p>
-                  <p
-                    v-if="!v$.changePasswordData.password.maxLength"
-                    class="help is-danger"
-                  >
-                    Cant be more than 64 chars
-                  </p>
-                  <p
-                    v-if="!v$.changePasswordData.password.alphaNum"
-                    class="help is-danger"
-                  >
-                    Needs to be alphanumeric
-                  </p>
                 </div>
               </div>
             </div>
@@ -70,28 +67,13 @@
                     class="input"
                     type="password"
                     placeholder="Repeat password"
-                    v-model="changePasswordData.repeatPassword"
+                    v-model="form.repeatPassword"
                   />
-                  <p
-                    v-if="!v$.changePasswordData.repeatPassword.required"
-                    class="help is-danger"
-                  >
-                    Required
-                  </p>
-                  <p
-                    v-if="!v$.changePasswordData.repeatPassword.sameAs"
-                    class="help is-danger"
-                  >
-                    Not same as password
-                  </p>
                 </div>
               </div>
               <div class="field is-grouped is-grouped-right">
-                <button
-                  class="button is-danger"
-                  @click="changePasswordBtnClicked()"
-                >
-                  Change the password
+                <button class="button is-danger" @click="submit">
+                  Change the details
                 </button>
               </div>
             </div>
@@ -99,79 +81,75 @@
         </div>
       </div>
     </div>
+    <div class="content friends-container card">
+      <h1>Friends List</h1>
+      <div v-if="User.user.friends.length > 1">
+        <div v-for="(friend, index) in User.user.friends" :key="index">
+          <p>{{ friend.handle }}</p>
+        </div>
+      </div>
+      <div v-else>
+        <p>No friends yet!!! Make friends now</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import useVuelidate from "@vuelidate/core";
-import Session from "../models/Session";
-import {
-  required,
-  minLength,
-  maxLength,
-  alphaNum,
-  sameAs,
-} from "@vuelidate/validators";
+import { mapGetters, mapActions } from "vuex";
 export default {
-  name: "v$ettings",
-  computed: {
-    getCurrentUser: function() {
-      console.log(Session.user);
-      return Session.user;
-    },
-    getCurrentUserFullName() {
-      return this.getCurrentUser.firstName + " " + this.getCurrentUser.lastName;
-    },
-  },
-  setup() {
-    return { v$: useVuelidate() };
-  },
-  mounted() {
-    if (!Session.user) {
-      this.$router.push("/Login");
-    }
-  },
+  name: "AccountSettings",
+  computed: {},
+  setup() {},
+
   data() {
     return {
-      changePasswordData: {
+      form: {
+        handle: "",
+        firstName: "",
+        lastName: "",
+        email: "",
         password: "",
         repeatPassword: "",
       },
-      changeProfileImageData: {
-        file: null,
-        uploadInProgress: false,
-        uploadPercent: 0,
-      },
+      error: "",
+      message: "",
     };
   },
-  validations: {
-    changePasswordData: {
-      password: {
-        required,
-        minLength: minLength(8),
-        alphaNum,
-        maxLength: maxLength(64),
-      },
-      repeatPassword: {
-        required,
-        sameAs: sameAs("password", this),
-      },
-    },
-    changeProfileImageData: {
-      file: {
-        required,
-      },
-    },
+
+  computed: {
+    ...mapGetters({ User: "User" }),
+  },
+  mounted() {
+    this.fillDetails();
+
+    console.log(this.User);
   },
   methods: {
-    changePasswordBtnClicked() {},
-    pictureSelected(e) {
-      this.changeProfileImageData.file = e.target.files[0];
+    ...mapActions(["UpdateDetails"]),
+    async submit() {
+      try {
+        if (this.form.password === this.form.repeatPassword) {
+          this.form.repeatPassword = null;
+          await this.UpdateDetails(this.form);
+          this.error = "";
+          this.message = "Details updated successfully";
+          this.clearform();
+        } else {
+          console.log("Password does not match");
+        }
+      } catch (error) {
+        console.log(error.toString());
+      }
     },
-    setUploadProgress(uploadEvent) {
-      this.changeProfileImageData.uploadPercent = Math.round(
-        (uploadEvent.loaded / uploadEvent.total) * 100
-      );
+    fillDetails() {
+      this.form.handle = this.User.user.handle;
+      this.form.firstName = this.User.user.firstName;
+      this.form.lastName = this.User.user.lastName;
+      this.form.email = this.User.user.email;
+    },
+    clearform() {
+      this.form.password = "";
     },
   },
 };
@@ -204,5 +182,9 @@ export default {
   .profile-info-element:nth-child(odd) {
     margin-top: 20px;
   }
+}
+.friends-container {
+  margin-top: 20px;
+  padding: 20px;
 }
 </style>

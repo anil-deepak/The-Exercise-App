@@ -72,6 +72,7 @@ module.exports.Register = async (user) => {
 
 module.exports.Update = (user_id, user) => {
   const oldObj = list[user_id];
+  console.log(list);
   if (user.firstName) {
     oldObj.firstName = user.firstName;
   }
@@ -80,6 +81,9 @@ module.exports.Update = (user_id, user) => {
   }
   if (user.handle) {
     oldObj.handle = user.handle;
+  }
+  if (user.email) {
+    oldObj.email = user.email;
   }
   if (user.pic) {
     oldObj.pic = user.pic;

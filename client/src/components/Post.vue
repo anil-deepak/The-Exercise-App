@@ -2,7 +2,7 @@
   <article class="media">
     <div class="media-left">
       <figure class="image is-64x64">
-        <img v-bind:src="info.src" v-bind:alt="info.alt" />
+        <img v-bind:src="info.src || fallbackImg" v-bind:alt="info.alt" />
       </figure>
     </div>
     <div class="media-content">
@@ -10,7 +10,7 @@
         {{ info.caption }}
         <br />
         <span class="has-text-link">
-          {{ info.user_handle }}
+          {{ info.handle }}
         </span>
       </div>
     </div>
@@ -23,6 +23,11 @@ export default {
   props: ["info"],
   methods: {},
   computed: {},
+  data() {
+    return {
+      fallbackImg: "../assets/1.png",
+    };
+  },
 };
 </script>
 

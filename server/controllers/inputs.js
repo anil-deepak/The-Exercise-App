@@ -1,25 +1,25 @@
 const express = require("express");
-const exercises = require("../models/exercises");
+const workouts = require("../models/workouts");
 const food = require("../models/food");
 const bmi = require("../models/BMI");
 
 const app = express.Router();
 
 // get all the exercises
-app.get("/exercise", (req, res) => {
-  res.send(exercises.GetWall(req.user.handle));
+app.get("/workout", (req, res) => {
+  res.send(workouts.GetWall(req.user.handle));
 });
 
 // post the exercise details
-app.post("/exercise", (req, res) => {
-  req.body.user_handle = req.user.handle;
-  res.send(exercises.Add(req.body));
+app.post("/workout", (req, res) => {
+  req.body.handle = req.user.handle;
+  res.send(workouts.Add(req.body));
 });
 
 // update the exercise details
 app.patch("/exercise/:exercise_id", (req, res) => {
-  req.body.user_handle = req.user.handle;
-  res.send(exercises.Update(req.params.exercise_id, req.body));
+  req.body.handle = req.user.handle;
+  res.send(workouts.Update(req.params.exercise_id, req.body));
 });
 
 // delete the exercise details
@@ -34,13 +34,13 @@ app.get("/food", (req, res) => {
 
 // post the food taken details
 app.post("/food", (req, res) => {
-  req.body.user_handle = req.user.handle;
+  req.body.handle = req.user.handle;
   res.send(food.Add({ ...req.body, date: Date() }));
 });
 
 // update the food details
 app.patch("/food/:food_id", (req, res) => {
-  req.body.user_handle = req.user.handle;
+  req.body.handle = req.user.handle;
   res.send(food.Update(req.params.food_id, req.body));
 });
 
@@ -56,7 +56,7 @@ app.get("/bmi", (req, res) => {
 
 // post the bmi taken details
 app.post("/bmi", (req, res) => {
-  req.body.user_handle = req.user.handle;
+  req.body.handle = req.user.handle;
   res.send(bmi.Add(req.body));
 });
 
