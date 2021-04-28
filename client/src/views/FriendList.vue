@@ -5,8 +5,8 @@
         <div class="panel-heading">
           FriendList
         </div>
-        <div class="panel-block" v-for="friend in users" :key="friend._id">
-          <PersonCard :addFriendVisible="false" :user="friend" />
+        <div class="panel-block" v-for="friend in Friends" :key="friend.id">
+          <PersonCard :user="friend" :removeFriendVisible="true" />
         </div>
       </div>
     </div>
@@ -15,6 +15,7 @@
 
 <script>
 import PersonCard from "../components/PersonCard";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "FriendList",
@@ -22,13 +23,13 @@ export default {
     PersonCard,
   },
   computed: {
-    getFriendsObjects: () => {
-      return [];
-    },
+    ...mapGetters({ Friends: "Friends" }),
   },
-  methods: {},
-  async mounted() {
-    this.users = [];
+  created: function() {
+    this.GetFriends();
+  },
+  methods: {
+    ...mapActions(["GetFriends"]),
   },
 };
 </script>

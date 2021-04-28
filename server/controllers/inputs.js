@@ -1,7 +1,6 @@
 const express = require("express");
 const workouts = require("../models/workouts");
 const food = require("../models/food");
-const bmi = require("../models/BMI");
 
 const app = express.Router();
 
@@ -47,17 +46,6 @@ app.patch("/food/:food_id", (req, res) => {
 // delete the food details
 app.delete("/food/:food_id", (req, res) => {
   res.send(food.Delete(req.params.food_id));
-});
-
-// get all the food input
-app.get("/bmi", (req, res) => {
-  res.send(bmi.GetWall(req.user.handle));
-});
-
-// post the bmi taken details
-app.post("/bmi", (req, res) => {
-  req.body.handle = req.user.handle;
-  res.send(bmi.Add(req.body));
 });
 
 module.exports = app;

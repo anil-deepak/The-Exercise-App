@@ -46,7 +46,7 @@ module.exports.GetFeed = (handle) =>
   listWithOwner().filter((post) =>
     users
       .GetByHandle(handle)
-      .following.some((f) => f.handle == post.handle && f.isApproved)
+      .friends.some((f) => f.handle == post.handle && f.isApproved)
   );
 
 module.exports.Get = (post_id) => list[post_id];

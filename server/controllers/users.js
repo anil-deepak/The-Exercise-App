@@ -6,7 +6,6 @@ const app = express.Router();
 app
   .get("/", (req, res) => {
     res.json({ users: model.GetAll() });
-    console.log(req.headers);
   })
   .get("/:user_id", (req, res) => res.send(model.Get(req.params.user_id)))
   .post("/", (req, res) => {

@@ -22,7 +22,7 @@ app
   .use(cors())
   .use(morgan("dev"))
   .use("/auth", authController)
-  .use("/users", usersController)
+  .use("/users", LoginRequired, usersController)
   .use("/posts", LoginRequired, postsController)
   .use("/inputs", LoginRequired, inputsController)
   .use("/friends", LoginRequired, friendsController)

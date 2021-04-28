@@ -20,7 +20,7 @@
             </div>
           </div>
         </div>
-        <div class="panel-block" v-for="user in Users" :key="user.id">
+        <div class="panel-block" v-for="user in filteredUsers" :key="user.id">
           <PersonCard :user="user" />
         </div>
       </div>
@@ -45,7 +45,10 @@ export default {
     this.GetPeople();
   },
   computed: {
-    ...mapGetters({ Users: "People" }),
+    ...mapGetters({ Users: "People", MainUser: "User" }),
+    filteredUsers() {
+      return this.Users.filter((user) => user.handle != this.MainUser.handle);
+    },
   },
   methods: {
     ...mapActions(["GetPeople"]),

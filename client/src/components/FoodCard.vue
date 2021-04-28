@@ -4,7 +4,7 @@
       <div class="card-header-title">Food Log</div>
     </div>
     <div class="card-content">
-      <div v-if="Food">
+      <div v-if="Food != undefined">
         you last ate {{ Food[Food.length - 1].name }},
         {{ Food[Food.length - 1].quantity }} grams which is
         {{ Food[Food.length - 1].type }}. You consumed
@@ -22,7 +22,7 @@ export default {
   data() {
     return {};
   },
-  created: function () {
+  created: function() {
     this.GetFood();
   },
   computed: {

@@ -19,23 +19,38 @@
             >
           </p>
         </div>
-        <!-- <div class="media-right">
+        <div class="media-right">
+          <div v-if="!recievedRequest">
+            <button
+              class="button is-primary"
+              v-if="addFriendVisible"
+              :disabled="disabled"
+              @click="clickSendRequest()"
+            >
+              <span class="icon">
+                <i class="fas fa-plus"></i>
+              </span>
+            </button>
+          </div>
+
           <button
-            class="button is-primary"
-            v-if="addFriendVisible"
-            :disabled="!ableToSendFriendRequest"
+            class="button is-danger"
+            @click="clickRemoveFriend()"
+            v-if="removeFriendVisible"
           >
             <span class="icon">
-              <i class="fas fa-plus"></i>
+              <i class="fas fa-trash"></i>
             </span>
           </button>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   name: "PersonCard",
   props: {
@@ -48,16 +63,37 @@ export default {
       type: Boolean,
       default: true,
     },
-  },
-  computed: {
-    ableToSendFriendRequest: function() {
-      return true;
+    removeFriendVisible: {
+      type: Boolean,
+      default: false,
     },
   },
-  methods: {},
-  mounted() {
-    console.log(this.user);
+  data() {
+    return {
+      disabled: false,
+    };
   },
+  computed: {
+    ...mapGetters({ MainUser: "User" }),
+    recievedRequest() {
+      const userIndex = this.MainUser.user.friends.findIndex(
+        (frnd) => frnd.handle === this.user.handle
+      );
+      return userIndex === -1 ? false : true;
+    },
+  },
+
+  methods: {
+    ...mapActions(["SendRequest", "RemoveFriend"]),
+    async clickSendRequest() {
+      await this.SendRequest(this.user.handle);
+      this.disabled = true;
+    },
+    async clickRemoveFriend() {
+      await this.RemoveFriend(this.user.handle);
+    },
+  },
+  mounted() {},
 };
 </script>
 

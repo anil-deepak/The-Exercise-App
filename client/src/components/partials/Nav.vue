@@ -18,7 +18,9 @@
     </div>
     <div id="navbar" class="navbar-menu">
       <div class="navbar-start">
-        <router-link to="/" class="navbar-item">Home</router-link>
+        <router-link to="/" class="navbar-item" v-if="User != null"
+          >Home</router-link
+        >
         <router-link to="/about" class="navbar-item">About</router-link>
         <router-link to="/tools" class="navbar-item" v-if="User != null"
           >Tools</router-link
@@ -29,7 +31,7 @@
       </div>
       <div class="navbar-end">
         <div class="navbar-item">
-          <div class="buttons">
+          <div class="buttons" v-if="User === null">
             <router-link to="/Login" class="button is-danger"
               >Sign in</router-link
             >

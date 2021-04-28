@@ -17,6 +17,7 @@ const list = [
       { handle: "vp", isApproved: true },
       { handle: "johnsmith", isApproved: true },
     ],
+    requests: [],
   },
   {
     firstName: "Kamala",
@@ -27,6 +28,7 @@ const list = [
     password: "Her",
     isAdmin: true,
     friends: [{ handle: "johnsmith", isApproved: true }],
+    requests: [],
   },
   {
     firstName: "John",
@@ -37,6 +39,7 @@ const list = [
     password: "BeepBop",
     isAdmin: true,
     friends: [{ handle: "vp", isApproved: true }],
+    requests: [],
   },
 ];
 
@@ -66,7 +69,7 @@ module.exports.Register = async (user) => {
     throw { code: 422, msg: "First Name is required" };
   }
 
-  list.push({ ...user, friends: [], isAdmin: false });
+  list.push({ ...user, friends: [], requests: [], isAdmin: false });
   return { ...user, password: undefined };
 };
 
@@ -103,7 +106,7 @@ module.exports.Login = async (handle, password) => {
   const user = list.find((x) => x.handle === handle);
   const userIndex = list.findIndex((x) => x.handle === handle);
   if (!user)
-    throw { code: 401, msg: "Sorry there is no user with that handle" };
+    throw { code: 300, msg: "Sorry there is no user with that handle" };
 
   if (!(await bcrypt.compare(password, user.password))) {
     throw { code: 401, msg: "Wrong Password" };
@@ -127,22 +130,115 @@ module.exports.FromJWT = (token) => {
 };
 
 module.exports.sendFriendRequest = (user_id, handle) => {
-  let flag = true;
-  for (let otherUser in list[user_id].friends) {
-    if (otherUser.handle === handle) {
-      flag = false;
-      break;
-    }
+  const user = list[user_id];
+  // if the handle is already a friend or request is sent already
+
+  // get the index of the handle in the list
+  const handleIndex = list.findIndex((user) => user.handle === handle);
+  if (handleIndex === -1) {
+    throw { code: 401, message: "Handle Not found" };
   }
-  flag && list[user_id].friends.push({ handle: handle, isApproved: false });
+
+  const isFriend =
+    user.friends.findIndex((friend) => friend.handle === handle) > -1;
+  if (isFriend) {
+    throw { code: 300, message: "Friend request already sent" };
+  }
+
+  // add handle of sender to the reciever
+  list[handleIndex].requests.push(user.handle);
+
+  // add the requested handle to the friends list
+  list[user_id].friends.push({ handle, isApproved: false });
   return list[user_id];
 };
 
 module.exports.acceptFriendRequest = (user_id, handle) => {
-  for (let otherUser in list[user_id].friends) {
-    if (otherUser.handle === handle && otherUser.isApproved === false) {
-      otherUser.isApproved = true;
-    }
+  const user = list[user_id];
+  // get the index of the handle in the list
+  const handleIndex = list.findIndex((person) => person.handle === handle);
+  if (handleIndex === -1) {
+    throw { code: 401, message: "Handle Not found" };
   }
+
+  const requestIndex = user.requests.findIndex((request) => request === handle);
+  if (requestIndex === -1) {
+    return { code: 404, message: "Request Not Found" };
+  }
+
+  const friendIndex = list[handleIndex].friends.findIndex(
+    (friend) => friend.handle === user.handle
+  );
+  list[handleIndex].friends[friendIndex].isApproved = true;
+  list[user_id].friends.push({ handle, isApproved: true });
+
+  // remove the request in the user requests list
+  list[user_id].requests.splice(requestIndex, 1);
+
   return list[user_id];
+};
+
+module.exports.removeFriend = (user_id, handle) => {
+  const handleIndex = list[user_id].friends.findIndex(
+    (friend) => friend.handle === handle
+  );
+  if (handleIndex === -1) {
+    throw { code: 401, message: "Handle Not found" };
+  }
+  list[user_id].friends.splice(handleIndex, 1);
+
+  const handleUserIndex = list.findIndex((user) => user.handle === handle);
+  const userIndexInFriendList = list[handleUserIndex].friends.findIndex(
+    (user) => user.handle === list[user_id].handle
+  );
+  list[handleUserIndex].friends.splice(userIndexInFriendList, 1);
+
+  return list[user_id];
+};
+
+const getByHandle = (handle) => {
+  const handleIndex = list.findIndex((user) => user.handle === handle);
+  if (handleIndex !== -1) return { ...list[handleIndex], password: undefined };
+};
+
+module.exports.getFriends = (user_id) => {
+  const friendsList = list[user_id].friends;
+  let resList = [];
+  for (let index = 0; index < friendsList.length; index++) {
+    const friend = friendsList[index];
+    if (friend.isApproved) resList.push(getByHandle(friend.handle));
+  }
+  return resList;
+};
+
+module.exports.rejectRequest = (user_id, handle) => {
+  const userHandle = list[user_id].handle;
+  const handleIndex = list.findIndex((user) => user.handle === handle);
+  const requestHandleIndex = list[user_id].requests.findIndex(
+    (request) => request === handle
+  );
+
+  // remove the user handle from the requests list
+  if (requestHandleIndex === -1) {
+    return { code: 404, message: "Requeste not found" };
+  }
+
+  list[user_id].requests.splice(requestHandleIndex, 1);
+
+  const otherHandleIndex = list[handleIndex].friends.findIndex(
+    (friend) => friend.handle === userHandle
+  );
+  list[user_id].friends.splice(otherHandleIndex, 1);
+
+  return list[user_id];
+};
+
+module.exports.getRequests = (user_id) => {
+  const requestsList = list[user_id].requests;
+  let resList = [];
+  for (let index = 0; index < requestsList.length; index++) {
+    const userHandle = requestsList[index];
+    resList.push(getByHandle(userHandle));
+  }
+  return resList;
 };

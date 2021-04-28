@@ -15,6 +15,10 @@ app.get("/:post_id", (req, res) => {
   }
 });
 
+app.get("/feed", (req, res) => {
+  res.send(req.user.handle);
+});
+
 app.post("/", (req, res) => {
   req.body.handle = req.user.handle;
 
