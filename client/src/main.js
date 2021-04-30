@@ -11,9 +11,7 @@ import Buefy from "buefy";
 import "buefy/dist/buefy.css";
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = process.env.VUE_APP_API_ROOT;
-// axios.defaults.withCredentials = true;
-axios.interceptors.response.use(undefined, function(error) {
+axios.interceptors.response.use(undefined, function (error) {
   if (error) {
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
