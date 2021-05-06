@@ -14,17 +14,7 @@ const inputsController = require("./controllers/inputs");
 const friendsController = require("./controllers/friends");
 
 const app = express();
-const router = express.Router();
-router
-  .use((req, res, next) => {
-    res.setHeader("Content-Type", "application/json");
-    next();
-  })
-  .use("/auth", authController)
-  .use("/users", LoginRequired, usersController)
-  .use("/posts", LoginRequired, postsController)
-  .use("/inputs", LoginRequired, inputsController)
-  .use("/friends", LoginRequired, friendsController);
+
 const port = process.env.PORT || 3000;
 
 app
@@ -32,7 +22,11 @@ app
   .use(express.static("./dist"))
   .use(cors())
   .use(morgan("dev"))
-  .use("/", router);
+  .use("/auth", authController)
+  .use("/users", LoginRequired, usersController)
+  .use("/posts", LoginRequired, postsController)
+  .use("/inputs", LoginRequired, inputsController)
+  .use("/friends", LoginRequired, friendsController);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../dist")));
   app.get(/.*/, (req, res) =>
