@@ -22,6 +22,7 @@ axios.interceptors.response.use(undefined, function (error) {
   }
 });
 
+Vue.use(Buefy);
 new Vue({
   store,
   router,

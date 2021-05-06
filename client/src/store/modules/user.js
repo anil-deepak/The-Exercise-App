@@ -1,10 +1,12 @@
 import axios from "axios";
 
+
 const state = {
   user: null,
   token: null,
   friends: null,
   requests: null,
+  suggestions: null,
 };
 const getters = {
   loggedIn: (state) => state.user !== null,
@@ -12,6 +14,7 @@ const getters = {
   User: (state) => state.user,
   Friends: (state) => state.friends,
   Requests: (state) => state.requests,
+  Suggestions: (state) => state.suggestions
 };
 
 const actions = {
@@ -130,6 +133,17 @@ const actions = {
       await dispatch("GetFriends");
     }
   },
+
+  async GetSuggestions({ getters, commit }, str) {
+    let token = getters.Token;
+    if (token) {
+      const { data } = await axios.get(`/friends/auto-complete/${str}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(data)
+      await commit("setSuggestions", data)
+    }
+  }
 };
 
 const mutations = {
@@ -143,6 +157,9 @@ const mutations = {
     state.user = null;
     state.posts = null;
     state.token = null;
+  },
+  setSuggestions(data) {
+    state.suggestions = data;
   },
 
   setFriends(state, friends) {

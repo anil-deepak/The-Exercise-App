@@ -4,20 +4,20 @@
       <div class="panel">
         <div class="panel-heading">
           <div class="field has-addons is-fullwidth">
-            <div class="control has-icons-left is-expanded">
-              <input
-                class="input"
-                type="text"
-                placeholder="Search for people"
-                v-model.trim="search"
-              />
-              <span class="icon is-small is-left">
-                <i class="fas fa-search"></i>
-              </span>
-            </div>
-            <div class="control">
-              <a class="button is-info">Search</a>
-            </div>
+            <b-field label="Find People">
+              <b-autocomplete
+                rounded
+                v-model="name"
+                :data="Suggestions"
+                placeholder="e.g. john doe"
+                icon="magnify"
+                clearable
+                @keyup.native="fetchSuggestions"
+                @select="(option) => (selected = option)"
+              >
+                <template #empty>No results found</template>
+              </b-autocomplete>
+            </b-field>
           </div>
         </div>
         <div class="panel-block" v-for="user in filteredUsers" :key="user.id">
@@ -38,22 +38,41 @@ export default {
   },
   data() {
     return {
-      search: "",
+      name: "",
+      selected: null,
     };
   },
-  created: function() {
+  created: function () {
     this.GetPeople();
   },
+
   computed: {
-    ...mapGetters({ Users: "People", MainUser: "User" }),
+    ...mapGetters({
+      Users: "People",
+      MainUser: "User",
+      Suggestions: "Suggestions",
+    }),
     filteredUsers() {
       return this.Users.filter((user) => user.handle != this.MainUser.handle);
     },
+    filteredDataArray() {
+      return this.data.filter((option) => {
+        return (
+          option.toString().toLowerCase().indexOf(this.name.toLowerCase()) >= 0
+        );
+      });
+    },
   },
   methods: {
-    ...mapActions(["GetPeople"]),
-  },
-};
+    ...mapActions(["GetPeople", "GetSuggestions"]),
+    async fetchSuggestions(event) {
+      if (['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown', 'Enter'].includes(event.key)) { 
+      return null; 
+    }
+    await this.GetSuggestions(this.name);
+    }
+  
+}
 </script>
 
 <style></style>
