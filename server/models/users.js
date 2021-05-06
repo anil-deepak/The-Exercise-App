@@ -242,3 +242,18 @@ module.exports.getRequests = (user_id) => {
   }
   return resList;
 };
+
+module.exports.getSuggestions = (friendString) => {
+  const users = list.filter(
+    (user) =>
+      user.firstName + " " + user.lastName.toLowerCase().indexOf(friendString.toLowerCase()) !== -1
+
+  ).map((user) => user.firstName + " " + user.lastName);
+  users.sort(function (a, b) {
+    let x = a.toUpperCase(),
+      y = b.toUpperCase();
+    return x == y ? 0 : x > y ? 1 : -1;
+
+  })
+  return users;
+}

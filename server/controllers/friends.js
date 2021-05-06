@@ -27,4 +27,8 @@ app.get("/", (req, res) => {
 app.get("/requests", (req, res) => {
   res.send(users.getRequests(req.user.id));
 });
+
+app.get("/auto-complete/:friendString", (req, res) => {
+  res.send(users.getSuggestions(friendString));
+})
 module.exports = app;
